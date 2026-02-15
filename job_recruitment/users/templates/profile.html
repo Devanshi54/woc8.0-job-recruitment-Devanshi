@@ -1,3 +1,10 @@
 <h2>My Profile</h2>
 <p>Username: {{ profile.user.username }}</p>
 <p>Phone: {{ profile.phone_number }}</p>
+{% if user.user_type == 'job_seeker' %}
+    <a href="{% url 'my_applications' %}">My Applications</a>
+{% endif %}
+{% if user.user_type == 'employer' %}
+    <a href="{% url 'manage_applicants' %}">Manage Applicants</a>
+{% endif %}
+

@@ -1,0 +1,14 @@
+<h2>My Applications</h2>
+
+{% if applications %}
+    {% for application in applications %}
+        <div>
+            <h3>{{ application.job.title }}</h3>
+            <p>Status: {{ application.status }}</p>
+            <p>Date Applied: {{ application.date_applied }}</p>
+        </div>
+        <hr>
+    {% endfor %}
+{% else %}
+    <p>You have not applied to any jobs yet.</p>
+{% endif %}
