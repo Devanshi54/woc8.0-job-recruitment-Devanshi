@@ -6,7 +6,7 @@ from .models import Job
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-
+from django.db.models import Q
 @login_required
 def post_job(request):
     if request.user.user_type != 'employer':
@@ -22,11 +22,34 @@ def post_job(request):
     else:
         form = JobPostForm()
 
-    return render(request, 'post_job.html', {'form': form})
+    return render(request, 'jobs/post_job.html', {'form': form})
 class JobListView(ListView):
     model = Job
-    template_name = 'job_list.html'
+    template_name = 'jobs/job_list.html'
     context_object_name = 'jobs'
+
+    def get_queryset(self):
+        queryset = Job.objects.all()
+
+        # 🔍 Search
+        query = self.request.GET.get('q')
+        if query:
+            queryset = queryset.filter(
+                Q(title__icontains=query) |
+                Q(description__icontains=query)
+            )
+
+        # 🟢 Job Type Filter
+        job_type = self.request.GET.get('job_type')
+        if job_type:
+            queryset = queryset.filter(job_type=job_type)
+
+        # 🟢 Location Filter
+        location = self.request.GET.get('location')
+        if location:
+            queryset = queryset.filter(location__icontains=location)
+
+        return queryset
 class JobDetailView(DetailView):
     model = Job
     template_name = 'job_detail.html'
@@ -34,7 +57,7 @@ class JobDetailView(DetailView):
 class JobCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Job
     form_class = JobPostForm
-    template_name = 'post_job.html'
+    template_name = 'jobs/post_job.html'
     success_url = reverse_lazy('job_list')
 
     def form_valid(self, form):

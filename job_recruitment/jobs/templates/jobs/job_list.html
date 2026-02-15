@@ -1,4 +1,20 @@
 <h2>Available Jobs</h2>
+<form method="GET">
+    <input type="text" name="q" placeholder="Search jobs...">
+    <button type="submit">Search</button>
+</form>
+
+<h3>Filter by Job Type:</h3>
+<a href="?job_type=Full-Time">Full-Time</a>
+<a href="?job_type=Part-Time">Part-Time</a>
+<a href="?job_type=Internship">Internship</a>
+
+<h3>Filter by Location:</h3>
+<a href="?location=Gujarat">Gujarat</a>
+<a href="?location=Delhi">Delhi</a>
+<a href="?location=Mumbai">Mumbai</a>
+
+<hr>
 
 {% for job in jobs %}
     <div style="border:1px solid black; padding:10px; margin:10px;">
