@@ -12,8 +12,15 @@
             <p>Status: {{ application.status }}</p>
             <p>Date Applied: {{ application.date_applied }}</p>
 
-            <a href="{% url 'update_status' application.id 'Accepted' %}">Accept</a>
-            <a href="{% url 'update_status' application.id 'Rejected' %}">Reject</a>
+            {% if application.status == "Pending" %}
+            <a href="{% url 'update_status' application.id 'Accepted' %}" style="color:green;">Accept</a> |
+            <a href="{% url 'update_status' application.id 'Rejected' %}" style="color:red;">Reject</a>
+                {% elif application.status == "Accepted" %}
+                 <span style="color:green;"><strong>Accepted</strong></span>
+                {% else %}
+                <span style="color:red;"><strong>Rejected</strong></span>
+            {% endif %}
+
         </div>
         <hr>
     {% endfor %}

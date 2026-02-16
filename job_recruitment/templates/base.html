@@ -14,16 +14,25 @@
         {% if user.user_type == 'employer' %}
             <a href="{% url 'post_job' %}">Post Job</a> |
             <a href="{% url 'manage_applicants' %}">Manage Applicants</a> |
-            <a href="{% url 'logout' %}">Logout</a>
+            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+
         
         {% elif user.user_type == 'job_seeker' %}
             <a href="{% url 'my_applications' %}">My Applications</a> |
-            <a href="{% url 'logout' %}">Logout</a>
+            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+
         {% endif %}
     
     {% else %}
         <a href="{% url 'login' %}">Login</a> |
-        <a href="{% url 'signup' %}">Register</a>
+        <a href="{% url 'register' %}">Signup</a>
+
     {% endif %}
 
     </div>

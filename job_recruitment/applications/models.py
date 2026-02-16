@@ -12,8 +12,9 @@ class Application(models.Model):
     job = models.ForeignKey('jobs.Job', on_delete=models.CASCADE)
     seeker = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     date_applied = models.DateTimeField(auto_now_add=True)
+    resume = models.FileField(upload_to='resumes/', null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
-    cover_letter = models.TextField()
+    cover_letter = models.TextField(blank=False)
 
     def __str__(self):
         return f"{self.seeker.username} - {self.job.title}"

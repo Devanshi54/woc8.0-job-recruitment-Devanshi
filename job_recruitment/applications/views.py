@@ -21,7 +21,8 @@ def apply_job(request, job_id):
         return redirect('job_detail', pk=job.id)
 
     if request.method == 'POST':
-        form = ApplicationForm(request.POST)
+        form = ApplicationForm(request.POST, request.FILES)
+
         if form.is_valid():
             application = form.save(commit=False)
             application.job = job

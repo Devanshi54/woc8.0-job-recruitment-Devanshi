@@ -134,3 +134,5 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'krinavagasiya@gmail.com'
 EMAIL_HOST_PASSWORD = 'exbh aceu xgzy vzao'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
