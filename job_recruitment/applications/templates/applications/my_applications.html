@@ -1,3 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+
 <h2>My Applications</h2>
 
 {% if applications %}
@@ -6,9 +10,14 @@
             <h3>{{ application.job.title }}</h3>
             <p>Status: {{ application.status }}</p>
             <p>Date Applied: {{ application.date_applied }}</p>
+            {% if application.status == "Pending" %}
+                <a href="{% url 'withdraw_application' application.pk %}">Withdraw</a>
+            {% endif %}
+
         </div>
         <hr>
     {% endfor %}
 {% else %}
     <p>You have not applied to any jobs yet.</p>
 {% endif %}
+{% endblock %}

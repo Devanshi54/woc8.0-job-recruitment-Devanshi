@@ -7,6 +7,8 @@ from django.views.generic import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.db.models import Q
+from django.contrib import messages
+
 @login_required
 def post_job(request):
     if request.user.user_type != 'employer':
@@ -27,7 +29,7 @@ class JobListView(ListView):
     model = Job
     template_name = 'jobs/job_list.html'
     context_object_name = 'jobs'
-
+    paginate_by = 5   # 🔥 This enables pagination
     def get_queryset(self):
         queryset = Job.objects.all()
 
@@ -52,8 +54,21 @@ class JobListView(ListView):
         return queryset
 class JobDetailView(DetailView):
     model = Job
-    template_name = 'job_detail.html'
+    template_name = 'jobs/job_detail.html'
     context_object_name = 'job'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        already_applied = False
+
+        if self.request.user.is_authenticated and self.request.user.user_type == "job_seeker":
+            already_applied = Application.objects.filter(
+                job=self.object,
+                seeker=self.request.user
+            ).exists()
+
+        context['already_applied'] = already_applied
+        return context
 class JobCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Job
     form_class = JobPostForm
@@ -62,6 +77,7 @@ class JobCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.employer = self.request.user
+        messages.success(self.request, "Job posted successfully!")
         return super().form_valid(form)
 
     def test_func(self):
@@ -69,7 +85,7 @@ class JobCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 class JobUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Job
     form_class = JobPostForm
-    template_name = 'post_job.html'
+    template_name = 'jobs/post_job.html'
     success_url = reverse_lazy('job_list')
 
     def test_func(self):
@@ -77,7 +93,7 @@ class JobUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return self.request.user == job.employer
 class JobDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Job
-    template_name = 'job_confirm_delete.html'
+    template_name = 'jobs/job_confirm_delete.html'
     success_url = reverse_lazy('job_list')
 
     def test_func(self):

@@ -1,3 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+
 <h2>Post a Job</h2>
 
 <form method="POST">
@@ -7,3 +11,4 @@
 </form>
 
 <a href="{% url 'job_list' %}">Back to Jobs</a>
+{% endblock %}
