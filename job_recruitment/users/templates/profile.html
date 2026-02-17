@@ -1,13 +1,65 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
+
 <h2>My Profile</h2>
-<p>Username: {{ profile.user.username }}</p>
-<p>Phone: {{ profile.phone_number }}</p>
-{% if user.user_type == 'job_seeker' %}
-    <a href="{% url 'my_applications' %}">My Applications</a>
+
+<hr>
+
+<h3>Account Information</h3>
+
+<p><strong>Username:</strong> {{ request.user.username }}</p>
+<p><strong>Email:</strong> {{ request.user.email }}</p>
+<p><strong>User Type:</strong> {{ request.user.user_type }}</p>
+
+<hr>
+
+<h3>Profile Details</h3>
+
+{% if request.user.user_type == "job_seeker" %}
+
+    <p><strong>Phone:</strong> {{ profile.phone_number|default:"Not added" }}</p>
+    <p><strong>Address:</strong> {{ profile.address|default:"Not added" }}</p>
+    <p><strong>Skills:</strong> {{ profile.skills|default:"Not added" }}</p>
+
+    {% if profile.resume %}
+        <p>
+            <strong>Resume:</strong>
+            <a href="{{ profile.resume.url }}" target="_blank">View Resume</a>
+        </p>
+    {% else %}
+        <p><strong>Resume:</strong> Not uploaded</p>
+    {% endif %}
+
+    {% if profile.portfolio_url %}
+        <p>
+            <strong>Portfolio:</strong>
+            <a href="{{ profile.portfolio_url }}" target="_blank">
+                Visit Portfolio
+            </a>
+        </p>
+    {% endif %}
+
+{% elif request.user.user_type == "employer" %}
+
+    <p><strong>Company Name:</strong> {{ profile.company_name|default:"Not added" }}</p>
+    <p><strong>Industry:</strong> {{ profile.industry|default:"Not added" }}</p>
+    <p><strong>Website:</strong> {{ profile.company_website|default:"Not added" }}</p>
+    <p><strong>Description:</strong> {{ profile.company_description|default:"Not added" }}</p>
+
 {% endif %}
-{% if user.user_type == 'employer' %}
-    <a href="{% url 'manage_applicants' %}">Manage Applicants</a>
-{% endif %}
+
+<br>
+
+<a href="{% url 'edit_profile' %}">
+    <button>Edit Profile</button>
+</a>
+
+<form method="post" action="{% url 'delete_account' %}" style="margin-top:10px;">
+    {% csrf_token %}
+    <button style="background:red;color:white;">
+        Delete Account
+    </button>
+</form>
+
 {% endblock %}

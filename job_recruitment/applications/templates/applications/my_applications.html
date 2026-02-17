@@ -6,16 +6,40 @@
 
 {% if applications %}
     {% for application in applications %}
-        <div>
-            <h3>{{ application.job.title }}</h3>
-            <p>Status: {{ application.status }}</p>
-            <p>Date Applied: {{ application.date_applied }}</p>
-            {% if application.status == "Pending" %}
-                <a href="{% url 'withdraw_application' application.pk %}">Withdraw</a>
-            {% endif %}
 
-        </div>
-        <hr>
+    <div style="border:1px solid #ccc; padding:15px; margin:15px 0; border-radius:8px;">
+
+        <h3>{{ application.job.title }}</h3>
+
+        <p>
+            Status:
+            {% if application.status == "Pending" %}
+                <span style="color:orange;"><strong>{{ application.status }}</strong></span>
+            {% elif application.status == "Accepted" %}
+                <span style="color:green;"><strong>{{ application.status }}</strong></span>
+            {% elif application.status == "Rejected" %}
+                <span style="color:red;"><strong>{{ application.status }}</strong></span>
+            {% endif %}
+        </p>
+        {% if application.interview_date %}
+        <p>
+            <strong>Interview Date:</strong>
+            {{ application.interview_date|date:"M d, Y - h:i A" }}
+        </p>
+        {% endif %}
+
+        <p>Date Applied: {{ application.date_applied }}</p>
+
+        {% if application.status == "Pending" %}
+            <a href="{% url 'withdraw_application' application.pk %}">
+                <button style="background:red; color:white; padding:5px 10px; border:none; border-radius:5px;">
+                    Withdraw
+                </button>
+            </a>
+        {% endif %}
+
+         </div>
+
     {% endfor %}
 {% else %}
     <p>You have not applied to any jobs yet.</p>

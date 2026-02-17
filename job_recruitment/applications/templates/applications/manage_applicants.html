@@ -1,7 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
+<h2>Employer Dashboard</h2>
 
+<div style="background:#f4f4f4; padding:15px; margin-bottom:20px; border-radius:8px;">
+    <p><strong>Total Jobs Posted:</strong> {{ total_jobs }}</p>
+    <p><strong>Total Applications:</strong> {{ total_applications }}</p>
+    <p><strong>Accepted Applications:</strong> {{ accepted_count }}</p>
+</div>
 <h2>Manage Applicants</h2>
 
 {% if applications %}
@@ -9,15 +15,37 @@
         <div>
             <h3>{{ application.job.title }}</h3>
             <p>Applicant: {{ application.seeker.username }}</p>
+            {% if application.resume %}
+            <p>
+                <a href="{{ application.resume.url }}" download>
+                    Download Resume
+                </a>
+            </p>
+            {% endif %}
+
             <p>Status: {{ application.status }}</p>
             <p>Date Applied: {{ application.date_applied }}</p>
-
+            {% if application.resume %}
+            <p>
+                <strong>Resume:</strong>
+                <a href="{{ application.resume.url }}" target="_blank">
+                    View Resume
+                </a>
+            </p>
+            {% endif %}
+    
             {% if application.status == "Pending" %}
-            <a href="{% url 'update_status' application.id 'Accepted' %}" style="color:green;">Accept</a> |
-            <a href="{% url 'update_status' application.id 'Rejected' %}" style="color:red;">Reject</a>
-                {% elif application.status == "Accepted" %}
-                 <span style="color:green;"><strong>Accepted</strong></span>
-                {% else %}
+                <a href="{% url 'schedule_interview' application.id %}" style="color:green;">
+                    Schedule Interview
+                </a> |
+                <a href="{% url 'update_status' application.id 'Rejected' %}" style="color:red;">
+                Reject
+                </a>
+
+            {% elif application.status == "Accepted" %}
+                <span style="color:green;"><strong>Accepted</strong></span>
+
+            {% else %}
                 <span style="color:red;"><strong>Rejected</strong></span>
             {% endif %}
 

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import JobPostForm
 from django.views.generic import ListView,DetailView
+from applications.models import Application
 from .models import Job
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -30,6 +31,7 @@ class JobListView(ListView):
     template_name = 'jobs/job_list.html'
     context_object_name = 'jobs'
     paginate_by = 5   # 🔥 This enables pagination
+    ordering = ['-date_posted']
     def get_queryset(self):
         queryset = Job.objects.all()
 
@@ -52,22 +54,43 @@ class JobListView(ListView):
             queryset = queryset.filter(location__icontains=location)
 
         return queryset
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        applied_job_ids = []
+
+        if self.request.user.is_authenticated and self.request.user.user_type == "job_seeker":
+            applied_job_ids = Application.objects.filter(
+                seeker=self.request.user
+            ).values_list('job_id', flat=True)
+
+        context['applied_job_ids'] = applied_job_ids
+        return context
+
 class JobDetailView(DetailView):
     model = Job
     template_name = 'jobs/job_detail.html'
     context_object_name = 'job'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         already_applied = False
+        application_status = None   # ✅ IMPORTANT: define it first
 
         if self.request.user.is_authenticated and self.request.user.user_type == "job_seeker":
-            already_applied = Application.objects.filter(
+            application = Application.objects.filter(
                 job=self.object,
                 seeker=self.request.user
-            ).exists()
+            ).first()
+
+            if application:
+                already_applied = True
+                application_status = application.status
 
         context['already_applied'] = already_applied
+        context['application_status'] = application_status
+
         return context
 class JobCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Job

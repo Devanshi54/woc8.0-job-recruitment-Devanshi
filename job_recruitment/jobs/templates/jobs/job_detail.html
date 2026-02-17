@@ -13,21 +13,26 @@
 
 <p>{{ job.description }}</p>
 
-<a href="{% url 'job_list' %}">Back to Jobs</a>
-
-<!-- 🔥 Apply Button Logic -->
-
-{% if user.is_authenticated and user.user_type == "job_seeker" %}
+{% if user.is_authenticated and user.user_type == 'job_seeker' %}
 
     {% if already_applied %}
-        <button disabled>Applied</button>
+        <p style="color:green;">
+            You have already applied for this job.
+            <br>
+            Status: <strong>{{ application_status }}</strong>
+        </p>
+        <button disabled style="background:gray;">
+            Already Applied
+        </button>
     {% else %}
-        <a href="{% url 'apply_job' job.id %}">Apply</a>
+        <a href="{% url 'apply_job' job.id %}">
+            <button>Apply Now</button>
+        </a>
     {% endif %}
 
 {% endif %}
 
-<!-- Employer Controls -->
+<a href="{% url 'job_list' %}">Back to Jobs</a>
 
 {% if user == job.employer %}
     <a href="{% url 'edit_job' job.pk %}">Edit</a>

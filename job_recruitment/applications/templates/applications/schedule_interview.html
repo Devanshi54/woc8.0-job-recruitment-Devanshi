@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Schedule Interview</h2>
+
+<p>Applicant: {{ application.seeker.username }}</p>
+<p>Job: {{ application.job.title }}</p>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Confirm Interview</button>
+</form>
+
+{% endblock %}
+

@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from .forms import RegisterForm
-
+from django.contrib import messages
+from .models import UserProfile
 from django.contrib.auth.decorators import login_required
+from .forms import UserProfileForm
 
 def home(request):
     features = ['Jobs', 'Employers', 'Applications']
@@ -15,17 +17,21 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
+            messages.success(request, "Account created successfully! You are now logged in.")
+
             return redirect('home')
     else:
         form = RegisterForm()
 
     return render(request, 'register.html', {'form': form})
 
+
+
 @login_required
 def profile(request):
-    profile = request.user.userprofile
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
     return render(request, 'profile.html', {'profile': profile})
-from .forms import UserProfileForm
+
 
 @login_required
 def edit_profile(request):
